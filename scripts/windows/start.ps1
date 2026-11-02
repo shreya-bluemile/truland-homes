@@ -12,12 +12,17 @@ $DbPort = 3307
 $env:PATH = "$Tools\php;$Tools\node;$Tools\mariadb\bin;$env:PATH"
 
 function Test-Port([int]$Port) {
-    try {
-        $client = New-Object System.Net.Sockets.TcpClient
-        $client.Connect('localhost', $Port)
-        $client.Close()
-        return $true
-    } catch { return $false }
+    # Checks IPv4 and IPv6 separately: 'localhost' can resolve to either, and a server
+    # listening on only one of them would otherwise be missed (and started twice).
+    foreach ($ip in '127.0.0.1', '::1') {
+        try {
+            $client = New-Object System.Net.Sockets.TcpClient
+            $client.Connect($ip, $Port)
+            $client.Close()
+            return $true
+        } catch { }
+    }
+    return $false
 }
 
 function Wait-Port([int]$Port, [int]$Seconds, [string]$Name) {

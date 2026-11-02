@@ -7,6 +7,7 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 5173,
+    strictPort: true, // never hop to 5174+: a second copy should fail, not hide
     // Lets share.bat expose the app through a Cloudflare quick tunnel (see scripts/windows/share.ps1).
     allowedHosts: ['.trycloudflare.com'],
     proxy: {
