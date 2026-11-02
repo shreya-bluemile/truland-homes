@@ -13,13 +13,17 @@ class LotController extends Controller
     {
         $search = $request->validate(['search' => ['nullable', 'string', 'max:100']])['search'] ?? null;
 
-        return response()->json(
-            Lot::withCount('quotations')
-                ->when($search, fn ($q, $s) => $q->where('address', 'like', "%{$s}%"))
-                ->orderBy('address')
-                ->paginate(15)
-                ->withQueryString()
-        );
+        $page = Lot::withCount('quotations')
+            ->when($search, fn ($q, $s) => $q->where('address', 'like', "%{$s}%"))
+            ->orderBy('address')
+            ->paginate(15)
+            ->withQueryString();
+
+        // Same shape as the other lists: data + meta.
+        return response()->json([
+            'data' => $page->items(),
+            'meta' => ['current_page' => $page->currentPage(), 'last_page' => $page->lastPage(), 'total' => $page->total()],
+        ]);
     }
 
     public function store(Request $request): JsonResponse

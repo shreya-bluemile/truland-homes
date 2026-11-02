@@ -3,6 +3,10 @@ import AppLayout from './components/layout/AppLayout'
 import PlaceholderPage from './pages/PlaceholderPage'
 import QuotationsPage from './features/quotations/QuotationsPage'
 import PublicQuotationPage from './features/public/PublicQuotationPage'
+import ContractorsPage from './features/contractors/ContractorsPage'
+import EmailTemplatesPage from './features/settings/EmailTemplatesPage'
+import CategoriesPage from './features/settings/CategoriesPage'
+import LotsPage from './features/settings/LotsPage'
 
 const PLACEHOLDERS = [
   ['dashboard', 'Dashboard'], ['staff', 'Staff'], ['clients', 'Clients'], ['builders', 'Builders'],
@@ -22,8 +26,13 @@ export default function App() {
           <Route key={path} path={path} element={<PlaceholderPage title={title} />} />
         ))}
         <Route path="contractor-quotations" element={<QuotationsPage />} />
-        <Route path="contractors" element={<PlaceholderPage title="Contractors" upcoming />} />
-        <Route path="settings/*" element={<PlaceholderPage title="Settings" upcoming />} />
+        <Route path="contractors" element={<ContractorsPage />} />
+        <Route path="settings">
+          <Route index element={<Navigate to="/settings/email-templates" replace />} />
+          <Route path="email-templates" element={<EmailTemplatesPage />} />
+          <Route path="contractor-categories" element={<CategoriesPage />} />
+          <Route path="lots" element={<LotsPage />} />
+        </Route>
         <Route path="*" element={<PlaceholderPage title="Page not found" />} />
       </Route>
     </Routes>
