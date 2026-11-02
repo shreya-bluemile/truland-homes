@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
-import { useAuth } from '../../context/AuthContext'
 
 // Menu order and labels follow the Figma sidebar. Modules outside this project link to placeholder pages.
 const MENU = [
@@ -27,7 +26,6 @@ const itemBase = 'flex h-[29px] w-full items-center gap-[11px] whitespace-nowrap
 const Slot = () => <span className="h-[15px] w-[13px] shrink-0" aria-hidden="true" />
 
 export default function Sidebar() {
-  const { logout } = useAuth()
   const { pathname } = useLocation()
   const [expanded, setExpanded] = useState(() => (pathname.startsWith('/settings') ? 'Settings' : null))
 
@@ -69,10 +67,6 @@ export default function Sidebar() {
             </NavLink>
           ),
         )}
-        <button type="button" onClick={logout} className={`${itemBase} text-muted-nav`}>
-          <Slot />
-          Logout
-        </button>
       </nav>
     </aside>
   )

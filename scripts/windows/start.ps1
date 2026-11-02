@@ -64,7 +64,7 @@ try {
 
     Start-Process 'http://localhost:5173'
     Write-Host ''
-    Write-Host 'Sign in with admin@trulandhomes.com.au / password'
+    Write-Host 'The app opens straight into Contractor Quotations (no login).'
     Write-Host 'To stop the app, close the database (minimised), "Truland API" and "Truland Frontend" windows.'
 } catch {
     Write-Host ''

@@ -77,12 +77,9 @@ cp .env.example .env            # Windows: copy .env.example .env
 npm run dev                     # app at http://localhost:5173
 ```
 
-Open http://localhost:5173 and sign in with the seeded account:
+Open http://localhost:5173. There is no login screen: the app opens straight into Contractor Quotations and acts as the seeded **Admin** user (the name shown on quotations, notes and the activity log).
 
-- Email: `admin@trulandhomes.com.au`
-- Password: `password`
-
-Change this password before the app is used anywhere other than your own machine.
+Because there is no login, anyone who can reach the app's address can use it. Keep it on your own machine or an internal network; if it is ever hosted online, put it behind a VPN, an IP allow-list or password-protected hosting.
 
 ## Running the tests
 

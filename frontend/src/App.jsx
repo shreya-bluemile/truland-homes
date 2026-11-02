@@ -1,16 +1,6 @@
-import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
-import { useAuth } from './context/AuthContext'
+import { Navigate, Route, Routes } from 'react-router-dom'
 import AppLayout from './components/layout/AppLayout'
-import LoginPage from './pages/LoginPage'
 import PlaceholderPage from './pages/PlaceholderPage'
-
-function RequireAuth({ children }) {
-  const { user, loading } = useAuth()
-  const location = useLocation()
-  if (loading) return <div className="p-8 text-center text-[12px] text-muted">Loading…</div>
-  if (!user) return <Navigate to="/login" replace state={{ from: location.pathname }} />
-  return children
-}
 
 const PLACEHOLDERS = [
   ['dashboard', 'Dashboard'], ['staff', 'Staff'], ['clients', 'Clients'], ['builders', 'Builders'],
@@ -20,8 +10,9 @@ const PLACEHOLDERS = [
 export default function App() {
   return (
     <Routes>
-      <Route path="/login" element={<LoginPage />} />
-      <Route element={<RequireAuth><AppLayout /></RequireAuth>}>
+      {/* No login page: old /login links go straight into the app. */}
+      <Route path="/login" element={<Navigate to="/contractor-quotations" replace />} />
+      <Route element={<AppLayout />}>
         <Route index element={<Navigate to="/contractor-quotations" replace />} />
         {PLACEHOLDERS.map(([path, title]) => (
           <Route key={path} path={path} element={<PlaceholderPage title={title} />} />

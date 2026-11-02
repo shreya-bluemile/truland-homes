@@ -6,44 +6,32 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
+/** The app has no login: requests act as the first (main) user. */
 class AuthTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_user_can_log_in_and_fetch_profile(): void
+    public function test_requests_act_as_the_main_user_without_logging_in(): void
     {
-        User::factory()->create(['email' => 'staff@example.com', 'password' => 'secret123']);
+        $admin = User::factory()->create(['name' => 'Admin']);
+        User::factory()->create(['name' => 'Someone Else']);
 
-        $token = $this->postJson('/api/auth/login', ['email' => 'staff@example.com', 'password' => 'secret123'])
+        $this->getJson('/api/auth/me')
             ->assertOk()
-            ->assertJsonStructure(['token', 'user' => ['id', 'name', 'email']])
-            ->json('token');
-
-        $this->withToken($token)->getJson('/api/auth/me')
-            ->assertOk()
-            ->assertJsonPath('user.email', 'staff@example.com');
+            ->assertJsonPath('user.id', $admin->id)
+            ->assertJsonPath('user.name', 'Admin');
     }
 
-    public function test_wrong_password_returns_validation_error(): void
+    public function test_clear_error_when_no_user_has_been_seeded(): void
     {
-        User::factory()->create(['email' => 'staff@example.com', 'password' => 'secret123']);
-
-        $this->postJson('/api/auth/login', ['email' => 'staff@example.com', 'password' => 'nope'])
-            ->assertStatus(422)
-            ->assertJsonValidationErrors('email');
+        $this->getJson('/api/auth/me')
+            ->assertStatus(503)
+            ->assertJsonPath('message', 'No user account exists yet. Run: php artisan db:seed');
     }
 
-    public function test_protected_routes_require_a_token(): void
+    public function test_login_routes_no_longer_exist(): void
     {
-        $this->getJson('/api/auth/me')->assertUnauthorized();
-    }
-
-    public function test_logout_revokes_the_token(): void
-    {
-        $user = User::factory()->create();
-        $token = $user->createToken('web')->plainTextToken;
-
-        $this->withToken($token)->postJson('/api/auth/logout')->assertOk();
-        $this->assertDatabaseCount('personal_access_tokens', 0);
+        $this->postJson('/api/auth/login', ['email' => 'a@b.com', 'password' => 'x'])->assertNotFound();
+        $this->postJson('/api/auth/logout')->assertNotFound();
     }
 }

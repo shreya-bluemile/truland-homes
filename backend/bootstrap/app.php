@@ -13,7 +13,7 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        $middleware->alias(['default.user' => \App\Http\Middleware\UseDefaultUser::class]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         // Always answer API requests with JSON, never an HTML error page.
