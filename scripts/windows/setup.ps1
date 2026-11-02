@@ -165,7 +165,8 @@ try {
     & (Join-Path $Root 'scripts\windows\start.ps1') -DatabaseOnly
     $mariadb = Find-Bin @('mariadb.exe', 'mysql.exe')
     Invoke-Checked 'Creating the truland database' {
-        & $mariadb -uroot -h127.0.0.1 "--port=$DbPort" -e 'CREATE DATABASE IF NOT EXISTS truland CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;'
+        # Long options, each quoted: Windows PowerShell splits unquoted arguments like -h127.0.0.1 at the dot.
+        & $mariadb '--user=root' '--host=127.0.0.1' "--port=$DbPort" '--execute=CREATE DATABASE IF NOT EXISTS truland CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;'
     }
     Done 'Database "truland" ready.'
 
