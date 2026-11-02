@@ -7,6 +7,8 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 5173,
+    // Lets share.bat expose the app through a Cloudflare quick tunnel (see scripts/windows/share.ps1).
+    allowedHosts: ['.trycloudflare.com'],
     proxy: {
       '/api': { target: process.env.VITE_BACKEND_URL || 'http://127.0.0.1:8000', changeOrigin: true },
     },

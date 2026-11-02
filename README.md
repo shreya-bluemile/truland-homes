@@ -19,6 +19,8 @@ This creates a `truland-homes` folder on your Desktop and downloads private copi
 
 To start the app later, double-click `start.bat` (or the "Truland Homes" Desktop shortcut). If the database ever gets out of step with the code — for example after switching between versions — double-click `reset-database.bat`: it rebuilds the local database and reloads the sample data (all local data on that computer is replaced).
 
+To show the app to someone who isn't at your computer, double-click `share.bat`. It gives the app a temporary public link (`https://…trycloudflare.com`) that works while the window stays open. Anyone with the link can use the app — including creating and deleting data — so share it only with people you trust, and close the window when you're done. For a permanent address, host the app on a server instead.
+
 After that, **double-click `start.bat`** in the project folder to start the app. It runs in three windows (database, API, frontend), and closing them stops it.
 
 ## Manual setup
