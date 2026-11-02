@@ -22,14 +22,14 @@ export default function Header({ onToggleSidebar }) {
         ☰
       </button>
       <div className="ml-auto flex items-center gap-[22px]">
-        <button type="button" onClick={toggleFullscreen} aria-label="Toggle full screen" className="hidden text-[12px] text-chrome-text sm:block">
+        <button type="button" onClick={toggleFullscreen} aria-label="Toggle full screen" className="text-[12px] text-chrome-text">
           ⛶
         </button>
         <div className="flex items-center gap-[5px]">
           <span className="flex size-[26px] items-center justify-center rounded-full bg-[#d8e8f5] text-[12px] font-bold text-[#445566]">
             {name.charAt(0).toUpperCase()}
           </span>
-          <span className="hidden text-[12px] text-chrome-text sm:inline">{name}</span>
+          <span className="text-[12px] text-chrome-text">{name}</span>
         </div>
       </div>
     </header>

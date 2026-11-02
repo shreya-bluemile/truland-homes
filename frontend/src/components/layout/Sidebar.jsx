@@ -26,17 +26,13 @@ const MENU = [
 const itemBase = 'flex h-[29px] w-full items-center gap-[11px] whitespace-nowrap px-[17px] text-left text-[12px]'
 const Slot = () => <span className="h-[15px] w-[13px] shrink-0" aria-hidden="true" />
 
-export default function Sidebar({ open, onNavigate }) {
+export default function Sidebar() {
   const { logout } = useAuth()
   const { pathname } = useLocation()
   const [expanded, setExpanded] = useState(() => (pathname.startsWith('/settings') ? 'Settings' : null))
 
   return (
-    <aside
-      className={`fixed bottom-0 left-0 top-[57px] z-20 w-[193px] shrink-0 overflow-y-auto border-r-[0.909px] border-line-side bg-white py-[8px] transition-transform lg:sticky lg:h-[calc(100vh-57px)] ${
-        open ? 'translate-x-0' : '-translate-x-full lg:hidden'
-      }`}
-    >
+    <aside className="sticky top-[57px] h-[calc(100vh-57px)] w-[193px] shrink-0 overflow-y-auto border-r-[0.909px] border-line-side bg-white py-[8px]">
       <nav aria-label="Main">
         {MENU.map((item) =>
           item.children ? (
@@ -55,7 +51,6 @@ export default function Sidebar({ open, onNavigate }) {
                   <NavLink
                     key={child.to}
                     to={child.to}
-                    onClick={onNavigate}
                     className={({ isActive }) => `${itemBase} pl-[41px] ${isActive ? 'font-bold text-brand' : 'text-muted-nav'}`}
                   >
                     {child.label}
@@ -66,7 +61,6 @@ export default function Sidebar({ open, onNavigate }) {
             <NavLink
               key={item.to}
               to={item.to}
-              onClick={onNavigate}
               className={({ isActive }) => `${itemBase} ${isActive ? 'font-bold text-brand' : 'text-muted-nav'}`}
             >
               <Slot />
