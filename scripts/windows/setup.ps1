@@ -20,6 +20,7 @@ $ComposerUrl    = 'https://getcomposer.org/download/latest-stable/composer.phar'
 $MariaDbVersion = '10.11.10'
 $MariaDbUrl     = "https://archive.mariadb.org/mariadb-$MariaDbVersion/winx64-packages/mariadb-$MariaDbVersion-winx64.zip"
 $VcRedistUrl    = 'https://aka.ms/vs/17/release/vc_redist.x64.exe'
+$CaBundleUrl    = 'https://curl.se/ca/cacert.pem'   # trusted certificates, so PHP/Composer can use HTTPS
 $DbPort         = 3307   # not 3306, so it never clashes with a MySQL you may already have
 
 $Root  = Join-Path ([Environment]::GetFolderPath('Desktop')) 'truland-homes'
@@ -104,6 +105,17 @@ try {
         $ini = $ini -replace 'post_max_size\s*=\s*\d+M', 'post_max_size = 100M'
         Set-Content -Path (Join-Path $phpDir 'php.ini') -Value $ini -Encoding ASCII
     }
+    # The PHP zip has no list of trusted certificates, so HTTPS downloads (Composer) fail with
+    # "SSL certificate problem: unable to get local issuer certificate". Add one and point PHP at it.
+    # Runs on every setup so an existing php.ini from an earlier run is fixed too.
+    $caFile = Join-Path $phpDir 'cacert.pem'
+    if (-not (Test-Path $caFile)) { Get-File $CaBundleUrl $caFile }
+    $iniPath = Join-Path $phpDir 'php.ini'
+    $ini = Get-Content $iniPath -Raw
+    $ini = $ini -replace '(?m)^;?\s*curl\.cainfo\s*=.*$', "curl.cainfo = `"$caFile`""
+    $ini = $ini -replace '(?m)^;?\s*openssl\.cafile\s*=.*$', "openssl.cafile = `"$caFile`""
+    Set-Content -Path $iniPath -Value $ini -Encoding ASCII
+
     $env:PATH = "$phpDir;$env:PATH"
     # Windows PowerShell 5.1 treats redirected stderr as an error, so only stdout is discarded here.
     & $php -v | Out-Null
