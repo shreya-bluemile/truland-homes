@@ -14,5 +14,10 @@ class DatabaseSeeder extends Seeder
             ['email' => 'admin@trulandhomes.com.au'],
             ['name' => 'Admin', 'password' => 'password']
         );
+
+        $this->call([
+            EmailTemplateSeeder::class,
+            ReferenceDataSeeder::class,
+        ]);
     }
 }
