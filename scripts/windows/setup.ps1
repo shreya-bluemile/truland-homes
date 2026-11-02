@@ -127,9 +127,13 @@ try {
     Step 'Node.js 22'
     $nodeDir = Join-Path $Tools 'node'
     if (-not (Test-Path (Join-Path $nodeDir 'node.exe'))) {
-        $release = Invoke-RestMethod 'https://nodejs.org/dist/index.json' |
-            Where-Object { $_.version -like 'v22.*' -and $_.files -contains 'win-x64-zip' } |
-            Select-Object -First 1
+        # Windows PowerShell 5.1 passes a JSON array down a pipeline as ONE object, so the list is
+        # walked with foreach (which always enumerates) instead of Where-Object.
+        $releases = Invoke-RestMethod 'https://nodejs.org/dist/index.json'
+        $release = $null
+        foreach ($r in @($releases | ForEach-Object { $_ })) {
+            if ([string]$r.version -like 'v22.*' -and @($r.files) -contains 'win-x64-zip') { $release = $r; break }
+        }
         if (-not $release) { throw 'Could not find a Node.js 22 download.' }
         $v = $release.version
         $zip = Join-Path $Temp 'node.zip'
