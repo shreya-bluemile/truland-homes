@@ -108,8 +108,24 @@ try {
     # The PHP zip has no list of trusted certificates, so HTTPS downloads (Composer) fail with
     # "SSL certificate problem: unable to get local issuer certificate". Add one and point PHP at it.
     # Runs on every setup so an existing php.ini from an earlier run is fixed too.
+    # Windows' own trusted roots are added as well: antivirus HTTPS scanning (e.g. Avast) and company
+    # proxies re-sign connections with a certificate that only Windows knows about.
     $caFile = Join-Path $phpDir 'cacert.pem'
-    if (-not (Test-Path $caFile)) { Get-File $CaBundleUrl $caFile }
+    $curlCa = Join-Path $phpDir 'cacert-curl.pem'
+    if (-not (Test-Path $curlCa)) { Get-File $CaBundleUrl $curlCa }
+    $bundle = New-Object System.Text.StringBuilder
+    [void]$bundle.Append((Get-Content $curlCa -Raw))
+    $windowsRoots = 0
+    foreach ($store in 'Cert:\LocalMachine\Root', 'Cert:\CurrentUser\Root') {
+        foreach ($cert in @(Get-ChildItem $store -ErrorAction SilentlyContinue)) {
+            $base64 = [Convert]::ToBase64String($cert.RawData, [Base64FormattingOptions]::InsertLineBreaks)
+            [void]$bundle.Append("`n-----BEGIN CERTIFICATE-----`n$base64`n-----END CERTIFICATE-----`n")
+            $windowsRoots++
+        }
+    }
+    [IO.File]::WriteAllText($caFile, $bundle.ToString())
+    $env:NODE_EXTRA_CA_CERTS = $caFile   # npm uses the same certificates
+    Write-Host "    Trusted certificates ready (including $windowsRoots from Windows)."
     $iniPath = Join-Path $phpDir 'php.ini'
     $ini = Get-Content $iniPath -Raw
     $ini = $ini -replace '(?m)^;?\s*curl\.cainfo\s*=.*$', "curl.cainfo = `"$caFile`""
