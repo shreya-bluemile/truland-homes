@@ -17,6 +17,8 @@ irm https://raw.githubusercontent.com/shreya-bluemile/truland-homes/main/scripts
 
 This creates a `truland-homes` folder on your Desktop and downloads private copies of PHP 8.3, Composer, Node.js 22 and MariaDB into its hidden `.tools` folder. Nothing is installed system-wide, except the Microsoft Visual C++ runtime if PHP needs it. It then installs all dependencies, creates and seeds the database (on port 3307, so it can't clash with an existing MySQL), writes the `.env` files and opens the app in your browser. It takes about 5–10 minutes. If it stops, fix the reported problem and run it again; finished steps are skipped.
 
+To start the app later, double-click `start.bat` (or the "Truland Homes" Desktop shortcut). If the database ever gets out of step with the code — for example after switching between versions — double-click `reset-database.bat`: it rebuilds the local database and reloads the sample data (all local data on that computer is replaced).
+
 After that, **double-click `start.bat`** in the project folder to start the app. It runs in three windows (database, API, frontend), and closing them stops it.
 
 ## Manual setup
