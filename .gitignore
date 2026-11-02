@@ -3,3 +3,6 @@ Thumbs.db
 .idea/
 .vscode/
 .tools/
+
+# Written by share.bat each time it runs
+share-link.txt
