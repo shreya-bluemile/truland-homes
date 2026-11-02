@@ -23,8 +23,16 @@ $VcRedistUrl    = 'https://aka.ms/vs/17/release/vc_redist.x64.exe'
 $CaBundleUrl    = 'https://curl.se/ca/cacert.pem'   # trusted certificates, so PHP/Composer can use HTTPS
 $DbPort         = 3307   # not 3306, so it never clashes with a MySQL you may already have
 
-$Root  = Join-Path ([Environment]::GetFolderPath('Desktop')) 'truland-homes'
+# Run from a clone (setup.bat), work in that clone. Otherwise (irm | iex) use Desktop\truland-homes, avoiding a
+# OneDrive-synced Desktop: OneDrive would try to sync thousands of package files and can lock them.
+$ScriptRepo = if ($PSScriptRoot) { Split-Path (Split-Path $PSScriptRoot -Parent) -Parent } else { $null }
+if ($ScriptRepo -and (Test-Path (Join-Path $ScriptRepo 'backend'))) {
+    $Root = $ScriptRepo
+} else {
+    $Root = Join-Path $env:USERPROFILE 'Desktop\truland-homes'
+}
 $Tools = Join-Path $Root '.tools'
+$VisibleDesktop = [Environment]::GetFolderPath('Desktop')   # may be OneDrive\Desktop
 $Temp  = Join-Path $env:TEMP 'truland-setup'
 
 function Step([string]$Message) { Write-Host ''; Write-Host "==> $Message" -ForegroundColor Cyan }
@@ -84,6 +92,25 @@ try {
         Done 'Downloaded from GitHub.'
     }
     New-Item -ItemType Directory -Force -Path $Tools | Out-Null
+
+    # Earlier versions of this script worked in OneDrive\Desktop\truland-homes. Stop that copy's database
+    # (it would hold port 3307) and reuse its downloaded tools instead of downloading them again.
+    $oldCopy = Join-Path $VisibleDesktop 'truland-homes'
+    if ((Test-Path $oldCopy) -and ((Resolve-Path $oldCopy).Path -ne (Resolve-Path $Root).Path)) {
+        $oldTools = Join-Path $oldCopy '.tools'
+        Get-Process -Name mariadbd, mysqld -ErrorAction SilentlyContinue |
+            Where-Object { $_.Path -and $_.Path.StartsWith($oldTools, [StringComparison]::OrdinalIgnoreCase) } |
+            ForEach-Object { Write-Host '    Stopping the database from the older OneDrive copy...'; $_ | Stop-Process -Force }
+        Start-Sleep -Seconds 2
+        foreach ($item in 'php', 'node', 'mariadb', 'composer.phar') {
+            $from = Join-Path $oldTools $item
+            $to = Join-Path $Tools $item
+            if ((Test-Path $from) -and -not (Test-Path $to)) {
+                Write-Host "    Reusing $item from the older copy"
+                Copy-Item -Path $from -Destination $to -Recurse
+            }
+        }
+    }
 
     # 2. PHP 8.3 --------------------------------------------------------------------------------
     Step 'PHP 8.3'
@@ -201,6 +228,13 @@ try {
     # 6. Backend (Laravel) ------------------------------------------------------------------------
     Step 'Backend: installing PHP packages and setting up the database'
     $backend = Join-Path $Root 'backend'
+    # Laravel must be able to write to these folders; clear any read-only flag (set by OneDrive and some tools).
+    foreach ($dir in 'bootstrap\cache', 'storage', 'storage\app\private', 'storage\framework\cache\data',
+                     'storage\framework\sessions', 'storage\framework\views', 'storage\logs') {
+        $path = Join-Path $backend $dir
+        New-Item -ItemType Directory -Force -Path $path | Out-Null
+        Get-Item $path -Force | ForEach-Object { $_.Attributes = $_.Attributes -band (-bnot [IO.FileAttributes]::ReadOnly) }
+    }
     Push-Location $backend
     try {
         Invoke-Checked 'composer install' { & $php $composer install --no-interaction }
@@ -234,7 +268,18 @@ try {
     } finally { Pop-Location }
     Done 'Frontend ready.'
 
-    # 8. Start ------------------------------------------------------------------------------------
+    # 8. Desktop shortcut ---------------------------------------------------------------------------
+    try {
+        $shell = New-Object -ComObject WScript.Shell
+        $shortcut = $shell.CreateShortcut((Join-Path $VisibleDesktop 'Truland Homes.lnk'))
+        $shortcut.TargetPath = Join-Path $Root 'start.bat'
+        $shortcut.WorkingDirectory = $Root
+        $shortcut.Description = 'Start the Truland Homes app'
+        $shortcut.Save()
+        Done 'Added a "Truland Homes" shortcut to your Desktop.'
+    } catch { Write-Host '    Could not create the Desktop shortcut; use start.bat in the project folder.' }
+
+    # 9. Start ------------------------------------------------------------------------------------
     Step 'Starting the app'
     & (Join-Path $Root 'scripts\windows\start.ps1')
 
