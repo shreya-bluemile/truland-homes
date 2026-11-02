@@ -115,7 +115,8 @@ try {
         & $php -v | Out-Null
         if ($LASTEXITCODE -ne 0) { throw 'PHP still does not run after installing the Visual C++ runtime. Restart Windows and run setup again.' }
     }
-    Done ((& $php -r 'echo "PHP " . PHP_VERSION;'))
+    # No quote marks inside the -r code: Windows PowerShell 5.1 strips them when calling programs.
+    Done ('PHP ' + (& $php -r 'echo PHP_VERSION;'))
 
     # 3. Composer -------------------------------------------------------------------------------
     Step 'Composer'
