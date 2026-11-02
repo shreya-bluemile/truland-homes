@@ -7,23 +7,35 @@ Staff create quotation requests for a lot, email them to contractors in a trade 
 | `backend/` | Laravel 12 REST API (PHP 8.3, MySQL, Sanctum token auth) |
 | `frontend/` | React 19 app (Vite, Tailwind CSS, React Router, Axios) |
 
-## Requirements
+## Windows: automatic setup
+
+Open **PowerShell** (Start menu → type "PowerShell") and paste:
+
+```powershell
+irm https://raw.githubusercontent.com/shreya-bluemile/truland-homes/main/scripts/windows/setup.ps1 | iex
+```
+
+This creates a `truland-homes` folder on your Desktop and downloads private copies of PHP 8.3, Composer, Node.js 22 and MariaDB into its hidden `.tools` folder. Nothing is installed system-wide, except the Microsoft Visual C++ runtime if PHP needs it. It then installs all dependencies, creates and seeds the database (on port 3307, so it can't clash with an existing MySQL), writes the `.env` files and opens the app in your browser. It takes about 5–10 minutes. If it stops, fix the reported problem and run it again; finished steps are skipped.
+
+After that, **double-click `start.bat`** in the project folder to start the app. It runs in three windows (database, API, frontend), and closing them stops it.
+
+## Manual setup
+
+### Requirements
 
 - PHP 8.3+ with the `pdo_mysql`, `mbstring`, `xml`, `zip`, `curl` and `fileinfo` extensions
 - Composer 2
 - MySQL 8 (or MariaDB 10.6+)
 - Node.js 20+ and npm
 
-## Local setup
-
-### 1. Clone
+#### 1. Clone
 
 ```bash
 git clone https://github.com/shreya-bluemile/truland-homes.git
 cd truland-homes
 ```
 
-### 2. Database
+#### 2. Database
 
 Create an empty database, for example in the MySQL shell:
 
@@ -31,7 +43,7 @@ Create an empty database, for example in the MySQL shell:
 CREATE DATABASE truland CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 ```
 
-### 3. Backend
+#### 3. Backend
 
 ```bash
 cd backend
@@ -56,7 +68,7 @@ php artisan storage:link
 php artisan serve               # API at http://localhost:8000
 ```
 
-### 4. Frontend (in a second terminal)
+#### 4. Frontend (in a second terminal)
 
 ```bash
 cd frontend
