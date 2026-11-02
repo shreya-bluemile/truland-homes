@@ -46,6 +46,3 @@ export function FieldLabel({ children, required, htmlFor, className = '' }) {
 export function FieldError({ children }) {
   return children ? <p role="alert" className="mt-[4px] text-[11px] text-brand-bright">{children}</p> : null
 }
-
-export const inputClass = (invalid) =>
-  `w-full rounded-[4px] border-[0.909px] bg-white px-[13px] py-[10px] text-[12px] text-ink outline-none placeholder:text-muted-light focus:border-brand ${invalid ? 'border-brand-bright' : 'border-line-input'}`

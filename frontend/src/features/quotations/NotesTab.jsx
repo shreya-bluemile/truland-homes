@@ -3,7 +3,7 @@ import api, { parseApiError } from '../../api/client'
 import ConfirmDialog from '../../components/ui/ConfirmDialog'
 import FileDropzone from '../../components/ui/FileDropzone'
 import { FileIcon, ImageIcon, PencilBox, PlusIcon, TrashIcon } from '../../components/ui/Icons'
-import { useToast } from '../../components/ui/Toast'
+import { useToast } from '../../components/ui/useToast'
 import { checkFile, DOCUMENT_EXTENSIONS, downloadFile, extensionOf } from '../../utils/files'
 import { formatNoteDate, initial } from '../../utils/format'
 

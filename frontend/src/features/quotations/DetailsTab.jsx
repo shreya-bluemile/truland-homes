@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { parseApiError } from '../../api/client'
 import { FileTag } from '../../components/ui/Badges'
 import { DownloadIcon } from '../../components/ui/Icons'
-import { useToast } from '../../components/ui/Toast'
+import { useToast } from '../../components/ui/useToast'
 import { downloadFile } from '../../utils/files'
 import { formatDate, formatDateTime, formatSize } from '../../utils/format'
 

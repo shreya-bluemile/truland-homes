@@ -1,7 +1,6 @@
-import { createContext, useContext, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import api from '../api/client'
-
-const AuthContext = createContext({ user: null })
+import { AuthContext } from './useAuth'
 
 /** Loads the user the app acts as, for the name in the header. There is no login. */
 export function AuthProvider({ children }) {
@@ -13,5 +12,3 @@ export function AuthProvider({ children }) {
 
   return <AuthContext.Provider value={{ user }}>{children}</AuthContext.Provider>
 }
-
-export const useAuth = () => useContext(AuthContext)

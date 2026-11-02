@@ -2,8 +2,9 @@ import { useCallback, useEffect, useState } from 'react'
 import api, { parseApiError } from '../../api/client'
 import Drawer, { CloseButton } from '../../components/ui/Drawer'
 import Pagination from '../../components/ui/Pagination'
-import { FilterSelect, FieldError, FieldLabel, inputClass } from '../../components/ui/Select'
-import { useToast } from '../../components/ui/Toast'
+import { FilterSelect, FieldError, FieldLabel } from '../../components/ui/Select'
+import { inputClass } from '../../components/ui/inputClass'
+import { useToast } from '../../components/ui/useToast'
 import { ActiveBadge, PageHeader, SearchInput, Table, linkButton, primaryButton, secondaryButton, td } from '../../components/ui/page'
 
 const EMPTY = { name: '', description: '', subject: '', body: '', is_active: true }

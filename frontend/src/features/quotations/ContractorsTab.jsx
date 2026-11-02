@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import api, { parseApiError } from '../../api/client'
-import { useToast } from '../../components/ui/Toast'
+import { useToast } from '../../components/ui/useToast'
 import { downloadFile } from '../../utils/files'
 import { formatDateTime } from '../../utils/format'
 
