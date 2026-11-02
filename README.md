@@ -93,3 +93,11 @@ Tests use an in-memory SQLite database, so they never touch your MySQL data.
 ## Email in development
 
 `MAIL_MAILER=log` is the default, so emails are written to `backend/storage/logs/laravel.log` instead of being sent. Set real SMTP details in `backend/.env` to send them.
+
+The upload link in each quotation email points at `FRONTEND_URL` (`/quote/<token>`), so set that to the address contractors can reach.
+
+## Contractor Quotations
+
+- **Seed data:** `php artisan migrate --seed` adds sample lots, trades, contractors and quotations Q-0145 to Q-0148, matching the Figma screens. It is safe to run again.
+- **Reminders:** when a quotation's Reminder is set to "Automatically remind…", contractors who haven't responded get one reminder email that many days before the due date. This runs from Laravel's scheduler, so keep `php artisan schedule:work` running (or add `php artisan schedule:run` to cron / Task Scheduler every minute). With "Don't remind automatically", a **Send reminder** button shows in the Contractors tab instead.
+- **Statuses:** a quotation is *Awaiting* until every contractor has responded, *Overdue* if the due date passes first, then *Received* (at least one quote) or *Not Quoting*. Uploaded files are stored in `backend/storage/app/private`.
